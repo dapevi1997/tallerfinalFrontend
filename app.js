@@ -29,6 +29,7 @@ app.use('/user', require('./controller/find-user'));
 app.use('/user', require('./controller/save-user'));
 app.use('/user', require('./controller/register'));
 app.use('/lobby', require('./controller/lobby'));
+app.use('/start', require('./controller/start'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
