@@ -1,5 +1,6 @@
 const lobbyList = document.getElementById('lobbyList');
 const labelId = document.getElementById('labelId');
+const labelIdGamer = document.getElementById('labelIdGamer');
 const btnStart = document.getElementById('btnStart');
 
 
@@ -8,9 +9,17 @@ const btnStart = document.getElementById('btnStart');
  */
 labelId.style.display = 'none';
 /**
+ * Ocultar el label que contiene el id.
+ */
+ labelIdGamer.style.display = 'none';
+/**
 * Guardado el id del contacto que se quiere manipular.
 */
 const id = labelId.innerHTML;
+/**
+* Guardado el id del contacto que se quiere manipular.
+*/
+const idGamer = labelIdGamer.innerHTML;
 
 const filllobby = async () => {
     const res = await fetch(`http://localhost:8080/gamer/lobby/${id}`, {
@@ -54,7 +63,7 @@ const eventb= async(e)=>{
     let id = result.id;
 
 
-    window.location.href = `http://localhost:3000/start/game/${id}`;
+    window.location.href = `http://localhost:3000/start/game/${id}/${idGamer}`;
 
 };
 

@@ -24,13 +24,12 @@ const toCreateLobby = async() =>{
 
     });
     const result = await res.json();
-   // const { status } = result;
-    //console.log(status)
+
     return result;
 };
 
 const putGamerIntoLobby = async(mongoId, email, lobbyId)=>{
-     await fetch('http://localhost:8080/gamer', {
+    const res = await fetch('http://localhost:8080/gamer', {
         method: 'POST',
         mode: 'cors',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -41,6 +40,9 @@ const putGamerIntoLobby = async(mongoId, email, lobbyId)=>{
         })
 
     });
+
+    const result = await res.json();
+    return result;
  
 };
 
@@ -80,12 +82,12 @@ const eventb = async()=>{
                 let lobby =  await toCreateLobby();
                 console.log(lobby); // funciona 
                 console.log(lobby.id); //funciona
-                await putGamerIntoLobby(_id,email,lobby.id);
-                 window.location.href = `http://localhost:3000/lobby/${lobby.id}`;
+               let gamer = await putGamerIntoLobby(_id,email,lobby.id);
+                 window.location.href = `http://localhost:3000/lobby/${lobby.id}/${gamer.id}`;
                
             } else {
-                await putGamerIntoLobby(_id,email,isLobbieActived);
-                 window.location.href = `http://localhost:3000/lobby/${isLobbieActived}`;
+                let gamer = await putGamerIntoLobby(_id,email,isLobbieActived);
+                 window.location.href = `http://localhost:3000/lobby/${isLobbieActived}/${gamer.id}`;
                 
             }
            

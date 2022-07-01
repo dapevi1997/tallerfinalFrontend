@@ -2,9 +2,10 @@ var express = require('express');
 var router = express.Router();
 
 /* GET home page. */
-router.get('/:id', function(req, res, next) {
+router.get('/:id/:idGamer', function(req, res, next) {
   const id = req.params.id;
-  res.render('lobby', { id: id });
+  const idGamer = req.params.idGamer;
+  res.render('lobby', { id: id, idGamer:idGamer });
 });
 
 module.exports = router;
