@@ -38,7 +38,8 @@ filllobby();
 
 const eventb= async(e)=>{
     e.preventDefault();
-    await fetch('http://localhost:8080/game', {
+
+    const game = await fetch('http://localhost:8080/game', {
         method: 'POST',
         mode: 'cors',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -49,7 +50,11 @@ const eventb= async(e)=>{
 
     });
 
-    window.location.href = "http://localhost:3000/start/";
+    const result = await game.json();
+    let id = result.id;
+
+
+    window.location.href = `http://localhost:3000/start/game/${id}`;
 
 };
 
