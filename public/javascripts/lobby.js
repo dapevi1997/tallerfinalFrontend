@@ -15,7 +15,7 @@ labelId.style.display = 'none';
 /**
 * Guardado el id del contacto que se quiere manipular.
 */
-const id = labelId.innerHTML;
+const id = labelId.innerHTML; // id del lobby
 /**
 * Guardado el id del contacto que se quiere manipular.
 */

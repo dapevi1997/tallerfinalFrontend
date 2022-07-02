@@ -1,6 +1,9 @@
 const labelId = document.getElementById('labelId');
 const labelIdGamer = document.getElementById('labelIdGamer');
 const btnBallot = document.getElementById('btnBallot');
+const btnWinner = document.getElementById('btnWinner');
+
+
 
 /**
  * Ocultar el label que contiene el id.
@@ -19,6 +22,7 @@ const id = labelId.innerHTML; // id del juego
 */
 const idGamer = labelIdGamer.innerHTML; // id del jugador
 //
+var markedNumbers= [];
 
 
 const numbersBlackboardInDB = async () => {
@@ -47,6 +51,7 @@ const fillBlackboard = async () => {
 
     }
 
+
 };
 
 fillBlackboard();
@@ -67,13 +72,17 @@ const numberPaperboardInDB = async () => {
 
 const fillPaperboard = async () => {
     let result = await numberPaperboardInDB();
+    let justNumber = [];
+    let justLocation = []
 
     for (let index = 0; index < result.length; index++) {
 
         const element = result[index];
         let array = element.split(".");
         let number = array[0];
+        justNumber[index] = number;
         let location = array[1];
+        justLocation[index] = location;
 
         const numberInPaperboard = document.getElementById(`${location + 'P'}`);
         if (location == 'N3') {
@@ -85,6 +94,11 @@ const fillPaperboard = async () => {
 
 
     }
+
+    return {
+        numberInPaperboard: justNumber,
+        locationInPaperboard : justLocation
+    };
 
 };
 
@@ -333,6 +347,7 @@ const eventBtnBallot = async (e) => {
     e.preventDefault();
 
     let number = await numberForBlackboard();
+    let numberInBlackboard = removeLetter(number);
 
 
     await fetch('http://localhost:8080/numberBlackboard', {
@@ -347,7 +362,33 @@ const eventBtnBallot = async (e) => {
 
     });
 
+    let numberInPaper = await fillPaperboard();
+    let {numberInPaperboard} = numberInPaper;
+    let {locationInPaperboard} = numberInPaper;
+
+    for (let index = 0; index < numberInPaperboard.length; index++) {
+        if (numberInPaperboard[index] == numberInBlackboard) {
+            
+
+            let id = locationInPaperboard[index] + 'P';
+
+            const btn = document.getElementById(`${id}`);
+            btn.addEventListener('click', ()=>{
+                btn.disabled = true;
+                markedNumbers.push(locationInPaperboard[index]);
+            
+            });
+            
+           
+        }
+        
+    }
+  
     await fillBlackboard();
+
+
+
+
 };
 
 
@@ -358,4 +399,29 @@ const removeLetter = (numberWithLetter) => {
     return number;
 };
 
-btnBallot.addEventListener('click', eventBtnBallot)
+const toWin1=()=>{
+    let model = ['B1','I2'];
+
+    for (let index = 0; index < model.length; index++) {
+        const element = model[index];
+        if (markedNumbers.includes(element)) {
+            continue
+        } else {
+            return false;
+        }
+        
+    }
+  return true;
+};
+
+btnBallot.addEventListener('click', eventBtnBallot);
+btnWinner.addEventListener('click',()=>{
+    if ( toWin1() == true) {
+        //jugador gana, poner nombre con corona, juego finalizado, botón de balotas apagado
+    }else{
+        //jugador tachado, btn ganar desabilitado y sacar balota
+    }
+
+ 
+ 
+});
