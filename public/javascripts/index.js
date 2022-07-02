@@ -1,7 +1,19 @@
+/**
+ * Referencia al campo que contiene email del usuario.
+ */
 const txtEmail = document.getElementById('email');
+/**
+ * Referencia al campo que contiene la contraseña del usuario.
+ */
 const txtPassword = document.getElementById('password');
+/**
+ * Referencia al botón que guarda las credenciales del usuario.
+ */
 const btnLogIn = document.getElementById('btnLogIn');
-
+/**
+ * Función para preguntar si hay algún lobby activo.
+ * @returns True o false si hay o no lobby activo, respectivamente.
+ */
 const isLobbyActived = async()=>{
     const res = await fetch('http://localhost:8080/isLobbieActived', {
         method: 'GET',
@@ -12,7 +24,10 @@ const isLobbyActived = async()=>{
     return result;
     
 };
-
+/**
+ * Función para crear lobby
+ * @returns Lobby creado
+ */
 const toCreateLobby = async() =>{
     const res = await fetch('http://localhost:8080/lobby', {
         method: 'POST',
@@ -27,7 +42,13 @@ const toCreateLobby = async() =>{
 
     return result;
 };
-
+/**
+ * Función para ingresar un jugador a determinado lobby.
+ * @param {String} mongoId Id guardado en MongoDB. 
+ * @param {String} email Email guardado en MongoDB. 
+ * @param {int} lobbyId Id del lobby en donde se desea inresar al jugador.
+ * @returns Jugador ingresado.
+ */
 const putGamerIntoLobby = async(mongoId, email, lobbyId)=>{
     const res = await fetch('http://localhost:8080/gamer', {
         method: 'POST',
@@ -46,15 +67,13 @@ const putGamerIntoLobby = async(mongoId, email, lobbyId)=>{
  
 };
 
-
-
-
-
+/**
+ * Callback para el evento del botón ingresar.
+ */
 const eventb = async()=>{
+
     const email= txtEmail.value;
     const passwordIn= txtPassword.value;
-
-    
 
     const res = await fetch(`http://localhost:3000/user/find/${email}`, {
         method: 'GET',
@@ -69,7 +88,6 @@ const eventb = async()=>{
     if (result == null) {
         alert('Usuario no registrado, por favor regístrese');
     } else {
-        //mandar para el lobby
         const {password} = result;
         const {email} = result;
         const {_id} = result;
@@ -80,8 +98,6 @@ const eventb = async()=>{
 
             if (isLobbieActived == null) {
                 let lobby =  await toCreateLobby();
-                console.log(lobby); // funciona 
-                console.log(lobby.id); //funciona
                let gamer = await putGamerIntoLobby(_id,email,lobby.id);
                  window.location.href = `http://localhost:3000/lobby/${lobby.id}/${gamer.id}`;
                

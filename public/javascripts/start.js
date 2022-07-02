@@ -1,30 +1,60 @@
-const labelId = document.getElementById('labelId');
-const labelIdGamer = document.getElementById('labelIdGamer');
-const btnBallot = document.getElementById('btnBallot');
-const btnWinner = document.getElementById('btnWinner');
-
-
-
 /**
- * Ocultar el label que contiene el id.
+ * Referencia a la etiqueta que contiene el id del juego.
+ */
+const labelId = document.getElementById('labelId');
+/**
+ * Referencia a la etiqueta que contiene el id del jugador.
+ */
+const labelIdGamer = document.getElementById('labelIdGamer');
+/**
+ * Referencia a la etiqueta que contiene el id del lobby.
+ */
+const labelIdLobby = document.getElementById('labelIdLobby');
+/**
+ * Referencia al botón que saca una balota.
+ */
+const btnBallot = document.getElementById('btnBallot');
+/**
+ * Referencia al botón que pulsa un usuario al percatarse que ganó.
+ */
+const btnWinner = document.getElementById('btnWinner');
+/**
+ * Referencia al campo que contiene la lista de jugadores en el lobby.
+ */
+const lobbyList = document.getElementById('lobbyList');
+/**
+ * Ocultar el label que contiene el id del juego.
  */
 labelId.style.display = 'none';
 /**
- * Ocultar el label que contiene el id.
+ * Ocultar el label que contiene el id del jugador.
  */
 labelIdGamer.style.display = 'none';
 /**
-* Guardado el id del contacto que se quiere manipular.
-*/
-const id = labelId.innerHTML; // id del juego
+ * Ocultar el label que contiene el id del lobby.
+ */
+ labelIdLobby.style.display = 'none';
 /**
-* Guardado el id del contacto que se quiere manipular.
+* Guardado el id del juego.
 */
-const idGamer = labelIdGamer.innerHTML; // id del jugador
-//
+const id = labelId.innerHTML; 
+/**
+* Guardado el id del jugador.
+*/
+const idGamer = labelIdGamer.innerHTML; 
+/**
+* Guardado el id del lobby.
+*/
+const idLobby = labelIdLobby.innerHTML; // id del lobby
+/**
+ * Variable para almacenar las posiciones de los números marcados por el usuario.
+ */
 var markedNumbers= [];
 
-
+/**
+ * Función para extraer los números que han salido en el tablero.
+ * @returns Arreglo con números del tablero.
+ */
 const numbersBlackboardInDB = async () => {
     const res = await fetch(`http://localhost:8080/numbersBlackboard/game/${id}`, {
         method: 'GET',
@@ -37,7 +67,9 @@ const numbersBlackboardInDB = async () => {
     const result = await res.json();
     return result
 };
-
+/**
+ * Función para llenar el tablero con los número salidos.
+ */
 const fillBlackboard = async () => {
     let result = await numbersBlackboardInDB();
 
@@ -53,9 +85,14 @@ const fillBlackboard = async () => {
 
 
 };
-
+/**
+ * Llenar el tablero al renderizar la página de inicio.
+ */
 fillBlackboard();
-
+/**
+ * Función para extraer los números que han salido y se encuentran en los cartones.
+ * @returns Números en los cartones.
+ */
 const numberPaperboardInDB = async () => {
 
     const res = await fetch(`http://localhost:8080/numbersPaperboard/gamer/${idGamer}`, {
@@ -69,7 +106,10 @@ const numberPaperboardInDB = async () => {
     const result = await res.json();
     return result
 };
-
+/**
+ * Función para llenar el cartón con los diferentes números.
+ * @returns Objeto con número y ubicación el mismo en el cartón.
+ */
 const fillPaperboard = async () => {
     let result = await numberPaperboardInDB();
     let justNumber = [];
@@ -101,9 +141,9 @@ const fillPaperboard = async () => {
     };
 
 };
-
-
-
+/**
+ * Generar números para la columna B
+ */
 const numberForBColumn = async () => {
     let number;
     let numbers = []
@@ -140,9 +180,9 @@ const numberForBColumn = async () => {
 
 
 };
-
-
-
+/**
+ * Generar números para la columna I
+ */
 const numberForIColumn = async () => {
     let number;
     let numbers = []
@@ -180,7 +220,9 @@ const numberForIColumn = async () => {
 
 
 };
-
+/**
+ * Generar números para la columna N
+ */
 const numberForNColumn = async () => {
     let number;
     let numbers = []
@@ -218,7 +260,9 @@ const numberForNColumn = async () => {
 
 
 };
-
+/**
+ * Generar números para la columna G
+ */
 const numberForGColumn = async () => {
     let number;
     let numbers = []
@@ -256,7 +300,9 @@ const numberForGColumn = async () => {
 
 
 };
-
+/**
+ * Generar números para la columna O
+ */
 const numberForOColumn = async () => {
     let number;
     let numbers = []
@@ -294,7 +340,9 @@ const numberForOColumn = async () => {
 
 
 };
-
+/**
+ * Funcion para llenar por completo el cartón del jugador.
+ */
 const numbersForPaperboard = async () => {
     //await numberForBColumn();
     //await numberForIColumn();
@@ -305,9 +353,15 @@ const numbersForPaperboard = async () => {
     await fillPaperboard();
 
 };
+/**
+ * Llamado de la función para llenar el cartón en cuento se renderise la página de inicio.
+ */
 numbersForPaperboard();
 
-
+/**
+ * Función para generar un número para el tablero.
+ * @returns 
+ */
 const numberForBlackboard = async () => {
     let result = await numbersBlackboardInDB();
     let numbersDB = [];
@@ -340,9 +394,10 @@ const numberForBlackboard = async () => {
 
 
 };
-
-
-
+/**
+ * Callback para el botón que escoge una balota.
+ * @param {String} e Variable para manejar el evento click. 
+ */
 const eventBtnBallot = async (e) => {
     e.preventDefault();
 
@@ -390,15 +445,49 @@ const eventBtnBallot = async (e) => {
 
 
 };
+/**
+ * Función para llenar la lista de jugadores en el juego en curso.
+ */
+const fillGamers = async()=>{
+    const res = await fetch(`http://localhost:8080/gamer/lobby/${idLobby}`, {
+        method: 'GET',
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+    });
+
+    const result = await res.json();
+
+    for (let index = 0; index < result.length; index++) {
+       
+
+        const element = result[index];
+        const array = await element.split(",");
+        if (array[1] == idGamer) {
+            lobbyList.innerHTML += `<li class="list-group-item" id= "${array[1]}">${array[0]}</li>`;
+        } else {
+            lobbyList.innerHTML += `<li class="list-group-item">${array[0]}</li>`;
+        }
+       
 
 
+    }
+};
 
-
+/**
+ * Función para eliminar la letra de un número
+ * @param {String} numberWithLetter Número con la letra
+ * @returns número sin la letra.
+ */
 const removeLetter = (numberWithLetter) => {
     let number = numberWithLetter.replace(/B|I|N|G|O/gi, '')
     return number;
 };
-
+/**
+ * Función para determinar si el jugador ganó.
+ * @returns True o false, si el jugador ganó o no, respectivamente.
+ */
 const toWin1=()=>{
     let model = ['B1','I2'];
 
@@ -413,13 +502,25 @@ const toWin1=()=>{
     }
   return true;
 };
-
+/**
+ * Creación del evento click para el botón que escoge una balota.
+ */
 btnBallot.addEventListener('click', eventBtnBallot);
+/**
+ * Creación del evento click para el botón que pulsa el jugador al percatarse que ganó.
+ */
 btnWinner.addEventListener('click',()=>{
-    if ( toWin1() == true) {
+   // if ( toWin1() == true) {
+        if (  true) {
         //jugador gana, poner nombre con corona, juego finalizado, botón de balotas apagado
+        const winner = document.getElementById(`${idGamer}`).innerHTML;
+        console.log('en boton')
+        lobbyList.innerHTML = '';
+
+        winner.innerHTML = `<li class="list-group-item" id= "${idGamer}"><b>${winner}</b> (ganador)</li>`;
     }else{
         //jugador tachado, btn ganar desabilitado y sacar balota
+        console.log('en else')
     }
 
  
