@@ -119,9 +119,8 @@ const eventb = async()=>{
     
 };
 
-
-
-
-
+/**
+ * Agregar evento click al botón para entrar al lobby
+ */
 btnLogIn.addEventListener('click',eventb)
 

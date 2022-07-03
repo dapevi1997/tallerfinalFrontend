@@ -56,11 +56,6 @@ const filllobby = async () => {
  * Llamado de la función al renderizar la página lobby.
  */
 filllobby();
-
-const toCreateGame = ()=>{
-
-};
-
 /**
  * Callback para el evento del botón iniciar.
  */
@@ -106,7 +101,9 @@ const eventb = async () => {
 
 };
 
-
+/**
+ * Función para crear una barra de progreso.
+ */
 const toCreateBarProgress = async () => {
     await fetch('http://localhost:8080/barProgress', {
         method: 'POST',
@@ -125,7 +122,10 @@ try {
     console.log('Ya existe barra para ese lobby')
 }
 
-
+/**
+ * 
+ * @returns Función para obtener el valor de la barra de progreso
+ */
 const toGetVar = async () => {
     const res = await fetch(`http://localhost:8080/var/lobby/${idLobby}`, {
         method: 'GET',
@@ -138,7 +138,10 @@ const toGetVar = async () => {
     const result = await res.json();
     return result;
 };
-
+/**
+ * Función para modificar el valor de la barra de progreso.
+ * @param {} value nuevo valor
+ */
 const toModifyVar = async (value) => {
 
     await fetch(`http://localhost:8080/bar/lobby/${idLobby}`, {
@@ -154,9 +157,10 @@ const toModifyVar = async (value) => {
 
 
 };
-
-
-
+/**
+ * Función para verificar si hay algún lobby activo.
+ * @returns id del lobby activo.
+ */
 const isLobbyActived = async () => {
     const res = await fetch('http://localhost:8080/isLobbieActived', {
         method: 'GET',
@@ -167,7 +171,10 @@ const isLobbyActived = async () => {
     console.log(result)
     return result;
 };
-
+/**
+ * Función para modificar el estado del lobby.
+ * @param {*} value 
+ */
 const toFinishLobby = async (value) => {
     await fetch(`http://localhost:8080/activated/lobby/${idLobby}`, {
         method: 'PATCH',
@@ -180,7 +187,9 @@ const toFinishLobby = async (value) => {
 
     });
 };
-
+/**
+ * Función para llenar la barra de progreso
+ */
 const fillBarprogress = async () => {
     let isLobbieActived = await isLobbyActived();
     if (isLobbieActived == null) {
