@@ -11,7 +11,7 @@ var router = express.Router();
  * API GET que lleva a la página de registro de la aplicación.
  */
 router.get('/register', function(req, res, next) {
-  res.render('register', { title: 'Express' });
+  res.render('register', { title: 'Registro' });
 });
 
 module.exports = router;

@@ -1,8 +1,45 @@
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-image: url("../images/fondo.jpg");
+  background-image:-moz-radial-gradient();
 }
 
 a {
   color: #00B7FF;
+}
+
+#form1{
+  background-image: url("../images/1.png");
+  width: 400px;
+  padding: 30px;
+  margin: auto;
+  border-radius: 4px;
+  box-shadow: 7px 13px 37px #000;
+  
+}
+
+#inputPasswordWelcome{
+  margin-bottom: 10px;
+}
+
+#formRegister{
+  background-image: url("../images/1.png");
+  width: 400px;
+  padding: 30px;
+  margin: auto;
+  border-radius: 4px;
+  box-shadow: 7px 13px 37px #000;
+}
+
+#inputPasswordWelcome{
+  margin-bottom: 10px;
+}
+
+#lobbyCSS{
+  width: 400px;
+  padding: 30px;
+  margin: auto;
+  border-radius: 4px;
+  box-shadow: 7px 13px 37px #000;
 }
