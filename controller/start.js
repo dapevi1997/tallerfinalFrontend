@@ -17,7 +17,7 @@ router.get('/game/:id/:idGamer/:idLobby', function(req, res, next) {
  const id= req.params.id;
  const idGamer= req.params.idGamer;
  const idLobby = req.params.idLobby;
-  res.render('start', { id: id, idGamer : idGamer , idLobby: idLobby});
+  res.render('start', { id: id, idGamer : idGamer , idLobby: idLobby, title: 'Bingo'});
 });
 
 module.exports = router;

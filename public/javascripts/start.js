@@ -41,7 +41,7 @@ const id = labelId.innerHTML;
 /**
 * Guardado el id del jugador.
 */
-const idGamer = labelIdGamer.innerHTML; 
+var idGamer = labelIdGamer.innerHTML; 
 /**
 * Guardado el id del lobby.
 */
@@ -401,45 +401,55 @@ const numberForBlackboard = async () => {
 const eventBtnBallot = async (e) => {
     e.preventDefault();
 
-    let number = await numberForBlackboard();
-    let numberInBlackboard = removeLetter(number);
+    let there = await thereWinner();
 
-
-    await fetch('http://localhost:8080/numberBlackboard', {
-        method: 'POST',
-        mode: 'cors',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-            'number': number,
-            'gameId': id,
-
-        })
-
-    });
-
-    let numberInPaper = await fillPaperboard();
-    let {numberInPaperboard} = numberInPaper;
-    let {locationInPaperboard} = numberInPaper;
-
-    for (let index = 0; index < numberInPaperboard.length; index++) {
-        if (numberInPaperboard[index] == numberInBlackboard) {
+    if (there == null) {
+        let number = await numberForBlackboard();
+        let numberInBlackboard = removeLetter(number);
+    
+    
+        await fetch('http://localhost:8080/numberBlackboard', {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                'number': number,
+                'gameId': id,
+    
+            })
+    
+        });
+    
+        let numberInPaper = await fillPaperboard();
+        let {numberInPaperboard} = numberInPaper;
+        let {locationInPaperboard} = numberInPaper;
+    
+        for (let index = 0; index < numberInPaperboard.length; index++) {
+            if (numberInPaperboard[index] == numberInBlackboard) {
+                
+    
+                let id = locationInPaperboard[index] + 'P';
+    
+                const btn = document.getElementById(`${id}`);
+                btn.addEventListener('click', ()=>{
+                    btn.disabled = true;
+                    markedNumbers.push(locationInPaperboard[index]);
+                
+                });
+                
+               
+            }
             
-
-            let id = locationInPaperboard[index] + 'P';
-
-            const btn = document.getElementById(`${id}`);
-            btn.addEventListener('click', ()=>{
-                btn.disabled = true;
-                markedNumbers.push(locationInPaperboard[index]);
-            
-            });
-            
-           
         }
-        
+      
+        await fillBlackboard();
+    } else {
+        alert ('Ya hay un ganador');
+        idGamer = there;
+        await fillGamers(1);
     }
-  
-    await fillBlackboard();
+
+
 
 
 
@@ -448,7 +458,7 @@ const eventBtnBallot = async (e) => {
 /**
  * Función para llenar la lista de jugadores en el juego en curso.
  */
-const fillGamers = async()=>{
+const fillGamers = async(estado)=>{
     const res = await fetch(`http://localhost:8080/gamer/lobby/${idLobby}`, {
         method: 'GET',
         headers: {
@@ -458,22 +468,49 @@ const fillGamers = async()=>{
     });
 
     const result = await res.json();
-
-    for (let index = 0; index < result.length; index++) {
+    lobbyList.innerHTML = '';
+    if (estado == -1) {
+        for (let index = 0; index < result.length; index++) {
        
-
-        const element = result[index];
-        const array = await element.split(",");
-        if (array[1] == idGamer) {
-            lobbyList.innerHTML += `<li class="list-group-item" id= "${array[1]}">${array[0]}</li>`;
-        } else {
-            lobbyList.innerHTML += `<li class="list-group-item">${array[0]}</li>`;
+            const element = result[index];
+            const array = await element.split(",");
+            if (array[1] == idGamer) {
+                lobbyList.innerHTML += `<li class="list-group-item" id= "${array[1]}">${array[0]}</li>`;
+            } else {
+                lobbyList.innerHTML += `<li class="list-group-item">${array[0]}</li>`;
+            }
+    
         }
+    } else if(estado == 0){
        
-
-
+        for (let index = 0; index < result.length; index++) {
+       
+            const element = result[index];
+            const array = await element.split(",");
+            if (array[1] == idGamer) {
+                lobbyList.innerHTML += `<li class="list-group-item" id= "${array[1]}"><del>${array[0]}</del></li>`;
+            } else {
+                lobbyList.innerHTML += `<li class="list-group-item">${array[0]}</li>`;
+            }
+    
+        }
+    } else if(estado == 1){
+        for (let index = 0; index < result.length; index++) {
+       
+            const element = result[index];
+            const array = await element.split(",");
+            if (array[1] == idGamer) {
+                lobbyList.innerHTML += `<li class="list-group-item" id= "${array[1]}"><b>${array[0]} (ganador)</b></li>`;
+            } else {
+                lobbyList.innerHTML += `<li class="list-group-item">${array[0]}</li>`;
+            }
+    
+        }
     }
+
+
 };
+fillGamers(-1);
 
 /**
  * Función para eliminar la letra de un número
@@ -489,7 +526,25 @@ const removeLetter = (numberWithLetter) => {
  * @returns True o false, si el jugador ganó o no, respectivamente.
  */
 const toWin1=()=>{
-    let model = ['B1','I2'];
+    let model = ['B1','I2','G4','O5'];
+
+    for (let index = 0; index < model.length; index++) {
+        const element = model[index];
+        if (markedNumbers.includes(element)) {
+            continue
+        } else {
+            return false;
+        }
+        
+    }
+  return true;
+};
+/**
+ * Función para determinar si el jugador ganó.
+ * @returns True o false, si el jugador ganó o no, respectivamente.
+ */
+ const toWin2=()=>{
+    let model = ['B5','I4','G2','O1'];
 
     for (let index = 0; index < model.length; index++) {
         const element = model[index];
@@ -506,23 +561,85 @@ const toWin1=()=>{
  * Creación del evento click para el botón que escoge una balota.
  */
 btnBallot.addEventListener('click', eventBtnBallot);
+
+/**
+ * Función para modificar el estado del juego
+ */
+const toUpdateFinished = async()=>{
+    await fetch(`http://localhost:8080/finished/game/${id}`, {
+        method: 'PATCH',
+        mode: 'cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+
+            'finished': 1
+        })
+
+    });
+};
+/**
+ * Función para actualizar el id del jugador
+ */
+const toUpdateIdWinner = async()=>{
+    await fetch(`http://localhost:8080/idWinner/game/${id}`, {
+        method: 'PATCH',
+        mode: 'cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+
+            'email': idGamer
+        })
+
+    });
+};
+/**
+ * Función para obtener el id del ganador
+ * @returns 
+ */
+const thereWinner = async()=>{
+    const res = await fetch(`http://localhost:8080/idWinner/game/${id}`, {
+        method: 'GET',
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+    });
+
+    const result = await res.json();
+    
+    return result
+};
+
 /**
  * Creación del evento click para el botón que pulsa el jugador al percatarse que ganó.
  */
-btnWinner.addEventListener('click',()=>{
-   // if ( toWin1() == true) {
-        if (  true) {
-        //jugador gana, poner nombre con corona, juego finalizado, botón de balotas apagado
-        const winner = document.getElementById(`${idGamer}`).innerHTML;
-        console.log('en boton')
-        lobbyList.innerHTML = '';
+ btnWinner.addEventListener('click',async(e)=>{
+    e.preventDefault();
+    
+    let there = await thereWinner();
 
-        winner.innerHTML = `<li class="list-group-item" id= "${idGamer}"><b>${winner}</b> (ganador)</li>`;
-    }else{
-        //jugador tachado, btn ganar desabilitado y sacar balota
-        console.log('en else')
+    if (there == null) {
+        if ( toWin1() == true || toWin2() == true) {
+        
+            await fillGamers(1);
+            btnBallot.disabled = true;
+            btnWinner.disabled = true;
+            await toUpdateFinished();
+            await toUpdateIdWinner();
+          
+         
+      }else{
+          await fillGamers(0);
+          
+          btnWinner.disabled = true;
+          btnBallot.disabled = true;
+       
+      }
+    } else {
+        alert ('Ya hay un ganador');
+        idGamer = there;
+        await fillGamers(1);
     }
-
  
  
 });

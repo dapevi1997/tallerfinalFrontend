@@ -2,28 +2,28 @@ body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
   background-image: url("../images/fondo.jpg");
-  background-image:-moz-radial-gradient();
+  background-image: -moz-radial-gradient();
 }
 
 a {
   color: #00B7FF;
 }
 
-#form1{
+#form1 {
   background-image: url("../images/1.png");
   width: 400px;
   padding: 30px;
   margin: auto;
   border-radius: 4px;
   box-shadow: 7px 13px 37px #000;
-  
+
 }
 
-#inputPasswordWelcome{
+#inputPasswordWelcome {
   margin-bottom: 10px;
 }
 
-#formRegister{
+#formRegister {
   background-image: url("../images/1.png");
   width: 400px;
   padding: 30px;
@@ -32,14 +32,60 @@ a {
   box-shadow: 7px 13px 37px #000;
 }
 
-#inputPasswordWelcome{
+#inputPasswordWelcome {
   margin-bottom: 10px;
 }
 
-#lobbyCSS{
+#lobbyCSS {
   width: 400px;
   padding: 30px;
   margin: auto;
   border-radius: 4px;
   box-shadow: 7px 13px 37px #000;
+}
+
+#tableBlackboardCSS {
+  padding-left: 10px;
+  padding-top: 10px;
+  margin-left: 57px;
+  float: left;
+  position: relative;
+  width: 45%;
+  border: steelblue solid 3px;
+  height: auto;
+
+}
+
+#tablePaperboardCSS {
+  padding-top: 10px;
+  padding-left: 10px;
+  margin-left: 10px;
+  position: relative;
+  float: left;
+  width: 45%;
+  border: steelblue solid 3px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+#btnsCSS{
+  padding-top: 10px;
+  padding-left: 10px;
+  margin-left: 10px;
+  position: relative;
+  float: left;
+  width: 45%;
+ 
+  height: auto;
+}
+
+#gamersCSS{
+  padding-top: 10px;
+  padding-left: 10px;
+  margin-left: 10px;
+  position: relative;
+  float: left;
+  width: 45%;
+ 
+  height: auto;
 }
