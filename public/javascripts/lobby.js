@@ -26,6 +26,7 @@ const idLobby = labelId.innerHTML;
 * Guardado el id del jugador.
 */
 const idGamer = labelIdGamer.innerHTML;
+
 /**
  * Función para llenar el lobby con los jugadores en él.
  */
@@ -56,28 +57,52 @@ const filllobby = async () => {
  */
 filllobby();
 
+const toCreateGame = ()=>{
+
+};
+
 /**
  * Callback para el evento del botón iniciar.
  */
 const eventb = async () => {
+
+    let idGame;
+
+    try {
+        const res = await fetch(`http://localhost:8080/idGame/game/${idLobby}`, {
+            method: 'GET',
+            headers: {
+                "Content-Type": "application/json"
+            },
+    
+        });
+    
+        const result = await res.json();
+        idGame = result;
+    } catch (error) {
+        const game = await fetch('http://localhost:8080/game', {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                'finished': 0,
+                'lobbyId': idLobby
+            })
+    
+        });
+    
+        const result = await game.json();
+         idGame = result.id;
+    }
   
-
-    const game = await fetch('http://localhost:8080/game', {
-        method: 'POST',
-        mode: 'cors',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-            'finished': 0,
-            'lobbyId': idLobby
-        })
-
-    });
-
-    const result = await game.json();
-    let id = result.id;
+   
+    
+     
 
 
-    window.location.href = `http://localhost:3000/start/game/${id}/${idGamer}/${idLobby}`;
+
+
+    window.location.href = `http://localhost:3000/start/game/${idGame}/${idGamer}/${idLobby}`;
 
 };
 
@@ -94,6 +119,11 @@ const toCreateBarProgress = async () => {
 
     });
 };
+try {
+    toCreateBarProgress();
+} catch (error) {
+    console.log('Ya existe barra para ese lobby')
+}
 
 
 const toGetVar = async () => {
@@ -160,7 +190,7 @@ const fillBarprogress = async () => {
             await toModifyVar(value + 10);
             const progressbar = document.getElementById('progressbar');
             progressbar.style = `width: ${value}%`;
-            if (value == 100) {
+            if (value >= 100) {
                 await toModifyVar(0);
                 await toFinishLobby(0);
                 clearInterval(timer);
@@ -170,11 +200,15 @@ const fillBarprogress = async () => {
             await filllobby();
         }, 3000)
     } else {
+       
         const timer = setInterval(async () => {
+           
             const value = await toGetVar();
+            await toModifyVar(value + 10);
+            console.log(value)
             const progressbar = document.getElementById('progressbar');
             progressbar.style = `width: ${value}%`;
-            if (value == 100) {
+            if (value >= 100) {
                 await toFinishLobby(0);
                 clearInterval(timer);
                 await eventb();
@@ -182,7 +216,7 @@ const fillBarprogress = async () => {
                 
             }
             await filllobby();
-        }, 1000);
+        }, 3000);
     }
 
 };

@@ -33,15 +33,15 @@ labelIdGamer.style.display = 'none';
 /**
  * Ocultar el label que contiene el id del lobby.
  */
- labelIdLobby.style.display = 'none';
+labelIdLobby.style.display = 'none';
 /**
 * Guardado el id del juego.
 */
-const id = labelId.innerHTML; 
+const id = labelId.innerHTML;
 /**
 * Guardado el id del jugador.
 */
-var idGamer = labelIdGamer.innerHTML; 
+var idGamer = labelIdGamer.innerHTML;
 /**
 * Guardado el id del lobby.
 */
@@ -49,7 +49,7 @@ const idLobby = labelIdLobby.innerHTML; // id del lobby
 /**
  * Variable para almacenar las posiciones de los números marcados por el usuario.
  */
-var markedNumbers= [];
+var markedNumbers = [];
 
 /**
  * Función para extraer los números que han salido en el tablero.
@@ -88,7 +88,45 @@ const fillBlackboard = async () => {
 /**
  * Llenar el tablero al renderizar la página de inicio.
  */
-fillBlackboard();
+setInterval(async () => {
+    await fillBlackboard();
+
+    let numbers = await numbersBlackboardInDB();
+    
+
+    let numberInPaper = await fillPaperboard();
+    let { numberInPaperboard } = numberInPaper;
+    let { locationInPaperboard } = numberInPaper;
+
+    for (let j = 0; j < numbers.length; j++) {
+        const element = removeLetter (numbers[j]);
+
+        for (let index = 0; index < numberInPaperboard.length; index++) {
+            if (numberInPaperboard[index] == element) {
+    
+    
+                let id = locationInPaperboard[index] + 'P';
+    
+                const btn = document.getElementById(`${id}`);
+                btn.addEventListener('click', () => {
+                    btn.disabled = true;
+                    markedNumbers.push(locationInPaperboard[index]);
+    
+                });
+    
+    
+            }
+    
+        }
+    }
+
+
+
+
+
+}, 1000);
+
+//fillBlackboard();
 /**
  * Función para extraer los números que han salido y se encuentran en los cartones.
  * @returns Números en los cartones.
@@ -137,7 +175,7 @@ const fillPaperboard = async () => {
 
     return {
         numberInPaperboard: justNumber,
-        locationInPaperboard : justLocation
+        locationInPaperboard: justLocation
     };
 
 };
@@ -344,11 +382,11 @@ const numberForOColumn = async () => {
  * Funcion para llenar por completo el cartón del jugador.
  */
 const numbersForPaperboard = async () => {
-    //await numberForBColumn();
-    //await numberForIColumn();
-    //await numberForNColumn();
-    //await numberForGColumn()
-    //await numberForOColumn();
+    await numberForBColumn();
+    await numberForIColumn();
+    await numberForNColumn();
+    await numberForGColumn()
+    await numberForOColumn();
 
     await fillPaperboard();
 
@@ -364,22 +402,22 @@ numbersForPaperboard();
  */
 const numberForBlackboard = async () => {
     let result = await numbersBlackboardInDB();
-    let numbersDB = [];
-    let number;
+    //let numbersDB = [];
+    let number = '';
     let letter = '';
 
 
 
-    for (let index = 0; index < result.length; index++) {
-        const element = result[index];
-        let elementWithoutLetter = await removeLetter(element);
+    // for (let index = 0; index < result.length; index++) {
+    //     const element = result[index];
+    //     let elementWithoutLetter = removeLetter(element);
 
-        numbersDB[index] = elementWithoutLetter;
+    //     numbersDB[index] = elementWithoutLetter;
 
-    }
+    // }
 
     do {
-        number = Math.round(Math.random() * (76 - 1) + 1)
+        number = Math.floor(Math.random() * (76 - 1) + 1)
         letter = '';
         if (number >= 1 && number <= 15) letter = "B";
         if (number >= 16 && number <= 30) letter = "I";
@@ -387,7 +425,7 @@ const numberForBlackboard = async () => {
         if (number >= 46 && number <= 60) letter = "G";
         if (number >= 61 && number <= 75) letter = "O";
 
-    } while (numbersDB.includes(number));
+    } while (result.includes(letter + number));
 
     return letter + number;
 
@@ -406,8 +444,8 @@ const eventBtnBallot = async (e) => {
     if (there == null) {
         let number = await numberForBlackboard();
         let numberInBlackboard = removeLetter(number);
-    
-    
+
+
         await fetch('http://localhost:8080/numberBlackboard', {
             method: 'POST',
             mode: 'cors',
@@ -415,38 +453,39 @@ const eventBtnBallot = async (e) => {
             body: new URLSearchParams({
                 'number': number,
                 'gameId': id,
-    
+
             })
-    
+
         });
-    
+
         let numberInPaper = await fillPaperboard();
-        let {numberInPaperboard} = numberInPaper;
-        let {locationInPaperboard} = numberInPaper;
-    
+        let { numberInPaperboard } = numberInPaper;
+        let { locationInPaperboard } = numberInPaper;
+
         for (let index = 0; index < numberInPaperboard.length; index++) {
             if (numberInPaperboard[index] == numberInBlackboard) {
-                
-    
+
+
                 let id = locationInPaperboard[index] + 'P';
-    
+
                 const btn = document.getElementById(`${id}`);
-                btn.addEventListener('click', ()=>{
+                btn.addEventListener('click', () => {
                     btn.disabled = true;
                     markedNumbers.push(locationInPaperboard[index]);
-                
+
                 });
-                
-               
+
+
             }
-            
+
         }
-      
+
         await fillBlackboard();
     } else {
-        alert ('Ya hay un ganador');
+        alert('Ya hay un ganador');
         idGamer = there;
         await fillGamers(1);
+
     }
 
 
@@ -455,10 +494,14 @@ const eventBtnBallot = async (e) => {
 
 
 };
+
+const addEventTobtn = () => {
+
+}
 /**
  * Función para llenar la lista de jugadores en el juego en curso.
  */
-const fillGamers = async(estado)=>{
+const fillGamers = async (estado) => {
     const res = await fetch(`http://localhost:8080/gamer/lobby/${idLobby}`, {
         method: 'GET',
         headers: {
@@ -471,7 +514,7 @@ const fillGamers = async(estado)=>{
     lobbyList.innerHTML = '';
     if (estado == -1) {
         for (let index = 0; index < result.length; index++) {
-       
+
             const element = result[index];
             const array = await element.split(",");
             if (array[1] == idGamer) {
@@ -479,12 +522,12 @@ const fillGamers = async(estado)=>{
             } else {
                 lobbyList.innerHTML += `<li class="list-group-item">${array[0]}</li>`;
             }
-    
+
         }
-    } else if(estado == 0){
-       
+    } else if (estado == 0) {
+
         for (let index = 0; index < result.length; index++) {
-       
+
             const element = result[index];
             const array = await element.split(",");
             if (array[1] == idGamer) {
@@ -492,11 +535,11 @@ const fillGamers = async(estado)=>{
             } else {
                 lobbyList.innerHTML += `<li class="list-group-item">${array[0]}</li>`;
             }
-    
+
         }
-    } else if(estado == 1){
+    } else if (estado == 1) {
         for (let index = 0; index < result.length; index++) {
-       
+
             const element = result[index];
             const array = await element.split(",");
             if (array[1] == idGamer) {
@@ -504,7 +547,7 @@ const fillGamers = async(estado)=>{
             } else {
                 lobbyList.innerHTML += `<li class="list-group-item">${array[0]}</li>`;
             }
-    
+
         }
     }
 
@@ -525,8 +568,8 @@ const removeLetter = (numberWithLetter) => {
  * Función para determinar si el jugador ganó.
  * @returns True o false, si el jugador ganó o no, respectivamente.
  */
-const toWin1=()=>{
-    let model = ['B1','I2','G4','O5'];
+const toWin1 = () => {
+    let model = ['B1', 'I2', 'G4', 'O5'];
 
     for (let index = 0; index < model.length; index++) {
         const element = model[index];
@@ -535,16 +578,16 @@ const toWin1=()=>{
         } else {
             return false;
         }
-        
+
     }
-  return true;
+    return true;
 };
 /**
  * Función para determinar si el jugador ganó.
  * @returns True o false, si el jugador ganó o no, respectivamente.
  */
- const toWin2=()=>{
-    let model = ['B5','I4','G2','O1'];
+const toWin2 = () => {
+    let model = ['B5', 'I4', 'G2', 'O1'];
 
     for (let index = 0; index < model.length; index++) {
         const element = model[index];
@@ -553,9 +596,9 @@ const toWin1=()=>{
         } else {
             return false;
         }
-        
+
     }
-  return true;
+    return true;
 };
 /**
  * Creación del evento click para el botón que escoge una balota.
@@ -565,7 +608,7 @@ btnBallot.addEventListener('click', eventBtnBallot);
 /**
  * Función para modificar el estado del juego
  */
-const toUpdateFinished = async()=>{
+const toUpdateFinished = async () => {
     await fetch(`http://localhost:8080/finished/game/${id}`, {
         method: 'PATCH',
         mode: 'cors',
@@ -580,7 +623,7 @@ const toUpdateFinished = async()=>{
 /**
  * Función para actualizar el id del jugador
  */
-const toUpdateIdWinner = async()=>{
+const toUpdateIdWinner = async () => {
     await fetch(`http://localhost:8080/idWinner/game/${id}`, {
         method: 'PATCH',
         mode: 'cors',
@@ -596,7 +639,7 @@ const toUpdateIdWinner = async()=>{
  * Función para obtener el id del ganador
  * @returns 
  */
-const thereWinner = async()=>{
+const thereWinner = async () => {
     const res = await fetch(`http://localhost:8080/idWinner/game/${id}`, {
         method: 'GET',
         headers: {
@@ -604,42 +647,48 @@ const thereWinner = async()=>{
         },
 
     });
+    try {
+        const result = await res.json();
+        return result
+    } catch (error) {
+        return null;
+    }
 
-    const result = await res.json();
-    
-    return result
+
+
+
 };
 
 /**
  * Creación del evento click para el botón que pulsa el jugador al percatarse que ganó.
  */
- btnWinner.addEventListener('click',async(e)=>{
+btnWinner.addEventListener('click', async (e) => {
     e.preventDefault();
-    
+
     let there = await thereWinner();
 
     if (there == null) {
-        if ( toWin1() == true || toWin2() == true) {
-        
+        if (toWin1() == true || toWin2() == true) {
+
             await fillGamers(1);
             btnBallot.disabled = true;
             btnWinner.disabled = true;
             await toUpdateFinished();
             await toUpdateIdWinner();
-          
-         
-      }else{
-          await fillGamers(0);
-          
-          btnWinner.disabled = true;
-          btnBallot.disabled = true;
-       
-      }
+
+
+        } else {
+            await fillGamers(0);
+
+            btnWinner.disabled = true;
+            btnBallot.disabled = true;
+
+        }
     } else {
-        alert ('Ya hay un ganador');
+        alert('Ya hay un ganador');
         idGamer = there;
         await fillGamers(1);
     }
- 
- 
+
+
 });
