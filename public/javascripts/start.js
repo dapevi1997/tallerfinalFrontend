@@ -88,7 +88,7 @@ const fillBlackboard = async () => {
 /**
  * Llenar el tablero al renderizar la página de inicio.
  */
-setInterval(async () => {
+const interval1 = setInterval(async () => {
     await fillBlackboard();
 
     let numbers = await numbersBlackboardInDB();
@@ -485,6 +485,7 @@ const eventBtnBallot = async (e) => {
         alert('Ya hay un ganador');
         idGamer = there;
         await fillGamers(1);
+        clearInterval(interval1);
 
     }
 
@@ -675,6 +676,7 @@ btnWinner.addEventListener('click', async (e) => {
             btnWinner.disabled = true;
             await toUpdateFinished();
             await toUpdateIdWinner();
+            clearInterval(interval1);
 
 
         } else {
@@ -682,12 +684,14 @@ btnWinner.addEventListener('click', async (e) => {
 
             btnWinner.disabled = true;
             btnBallot.disabled = true;
+            clearInterval(interval1);
 
         }
     } else {
         alert('Ya hay un ganador');
         idGamer = there;
         await fillGamers(1);
+        clearInterval(interval1);
     }
 
 
